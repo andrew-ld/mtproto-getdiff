@@ -1,0 +1,43 @@
+diff --git a/compiler/api/compiler.py b/compiler/api/compiler.py
+index 9e671e8..1a88546 100644
+--- a/compiler/api/compiler.py
++++ b/compiler/api/compiler.py
+@@ -343,6 +343,16 @@ def start():
+ 
+         write_types = read_types = "" if c.has_flags else "# No flags\n        "
+ 
++        slots = "[";
++        
++        if c.args:
++            for arg_name, _ in c.args:
++                slots += f"'{arg_name}', "
++
++            slots = slots[0:-2]
++            
++        slots += "]"
++
+         for arg_name, arg_type in c.args:
+             flag = FLAGS_RE_2.findall(arg_type)
+ 
+@@ -456,7 +466,8 @@ def start():
+                         fields=fields,
+                         read_types=read_types,
+                         write_types=write_types,
+-                        return_arguments=", ".join([i[0] for i in sorted_args if i != ("flags", "#")])
++                        return_arguments=", ".join([i[0] for i in sorted_args if i != ("flags", "#")]),
++                        slots=slots
+                     )
+                 )
+ 
+diff --git a/compiler/api/template/mtproto.txt b/compiler/api/template/mtproto.txt
+index 9a65b52..804f2f3 100644
+--- a/compiler/api/template/mtproto.txt
++++ b/compiler/api/template/mtproto.txt
+@@ -9,6 +9,7 @@ class {class_name}(Object):
+     """{docstring_args}
+     """
+ 
++    __slots__ = {slots}
+     ID = {object_id}
+ 
+     def __init__(self{arguments}):
