@@ -52,6 +52,10 @@ def bound_get_diff(queue: Queue):
 
 
 def write_diff(out, diff):
+    # WARNING: THIS IS A HACK
+    # APPEND A JSON LIST TO A JSON LIST
+    # WITHOUT PARSE AND REWRITE THE JSON
+
     raw = dumps(diff, cls=Encoder)
     size = out.tell()
 
@@ -111,10 +115,13 @@ def get_diff(token: str):
         elif isinstance(diff, DifferenceEmpty):
             break
 
+    client.save_session()
     if client.is_started:
         client.stop()
 
-    client.save_session()
+    if out.tell() == 0:
+        out.write("[]")
+
     out.close()
 
 
