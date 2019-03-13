@@ -115,7 +115,6 @@ def get_diff(token: str):
         elif isinstance(diff, DifferenceEmpty):
             break
 
-    client.save_session()
     if client.is_started:
         client.stop()
 
